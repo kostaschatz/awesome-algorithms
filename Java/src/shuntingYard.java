@@ -22,6 +22,7 @@ public class shuntingYard {
 
     //For separating input.
     private double[] numArray;
+    private OperatorsFunctions[] opFunArray;
     private char[] varArray;
     private String[] opArray;
     private String[] functionArray;
@@ -59,6 +60,7 @@ public class shuntingYard {
 
         getInput(in);
         numArray = new double[this.input.length()];
+        opFunArray = new OperatorsFunctions[this.input.length()];
         opArray = new String[this.input.length()];
 
 
@@ -112,7 +114,7 @@ public class shuntingYard {
     }
 
 
-    private boolean isOperator(char op)
+    private boolean findOperator(char op)
     {
         for (OperatorsFunctions of : operatorsArray ) {
             if (!of.isFunction()) {
@@ -125,7 +127,7 @@ public class shuntingYard {
         }
         return false;
     }
-    private boolean isOperator(char[] op)
+    private boolean findOperator(char[] op)
     {
         for (OperatorsFunctions of : operatorsArray ) {
             if (!of.isFunction()) {
@@ -139,7 +141,7 @@ public class shuntingYard {
 
         return false;
     }
-    private boolean isFunction(char[] fun)
+    private boolean findFunction(char[] fun)
     {
         for (OperatorsFunctions of : operatorsArray ) {
             if (of.isFunction()) {
@@ -151,6 +153,14 @@ public class shuntingYard {
             }
         }
         return false;
+    }
+
+    private boolean isOperator(char op)
+    {
+        if(Character.isDigit(op)) return false;
+        if(Character.isLetter(op)) return false;
+        if(op == '.' || op == '(' || op == ')') return false;
+        return true;
     }
 
     private OperatorsFunctions getOperator(char op)
@@ -254,6 +264,7 @@ public class shuntingYard {
         double store = 0;
         double afterPoint = 10;
         boolean atEnd = false;
+        StringBuilder tempOp =  new StringBuilder();
 
         int i = 0;
 
@@ -261,6 +272,8 @@ public class shuntingYard {
         {
              while((Character.isDigit(this.inputToChars[i]) || this.inputToChars[i] == '.') &&!atEnd)
              {
+                 //add to array and reset temps
+                 //increase arrayCounter
                  store = 10*store + Character.getNumericValue(this.inputToChars[i]);
                  i++;
                  if(this.inputToChars[i] == '.')
@@ -288,13 +301,33 @@ public class shuntingYard {
                      atEnd = true;
                      break;
                  }
-                 if(!Character.isDigit(this.inputToChars[i+1]) && !atEnd)
+                 if(!Character.isDigit(this.inputToChars[i]) && !atEnd)
                  {
                      store = 0;
                      afterPoint = 10;
                  }
 
              }
+
+         while(isOperator(this.inputToChars[i]) && atEnd)
+         {
+            tempOp.append(this.inputToChars[i]);
+            i++;
+            if(i == this.inputToChars.length - 1)
+            {
+                //add to array and reset temps
+                atEnd = true;
+                break;
+            }
+            if(!isOperator(this.inputToChars[i]))
+            {
+                //add to array and reset temps
+                //increase arrayCounter
+                break;
+            }
+
+
+         }
 
              //TODO
 
